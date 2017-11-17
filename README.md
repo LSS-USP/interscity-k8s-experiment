@@ -1,8 +1,13 @@
-# Experiment
+# InterSCity Platform Experiment with K8S
 
 This experiment aims at evaluating the InterSCity Platform perfomance and
 scalability in a real smart city enviornment. For this purpose,
-this repository has the scripts to run the platform on [GKE](https://cloud.google.com/container-engine).
+this repository has the scripts to run the platform on [GKE](https://cloud.google.com/container-engine)
+using [Kubernetes automating tool](https://kubernetes.io/). We also use
+the [InterSCSimulator](http://interscity.org/software/interscsimulator/) which
+integrates with InterSCity platform to generate the required workload for
+assessing the platform scalability. The experiment plan is described
+[here (portuguese only)]().
 
 # Setup
 

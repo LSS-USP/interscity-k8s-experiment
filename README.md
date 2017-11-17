@@ -59,18 +59,6 @@ sudo apt-get install kubectl
 gcloud config set compute/zone us-central1-f
 ```
 
-# TODO
-
-* [ ] For each stolon-sentinel, get cluster data
-* [ ] Separate node-pools on google to run databases. In a containner spec you may use:
-```yaml
-nodeSelector:
-  cloud.google.com/gke-nodepool: db-pool
-```
-* [ ] Run the simulator on cluster
-* [ ] Wait for all machines be in 'running' status to start experiment
-
-
 # References
 
 * RabbitMQ

@@ -21,7 +21,7 @@ metadata:
   labels:
     name: resource-catalog
 spec:
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       labels:

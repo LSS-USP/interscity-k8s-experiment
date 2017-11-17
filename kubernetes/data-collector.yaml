@@ -21,7 +21,7 @@ metadata:
   labels:
     name: data-collector
 spec:
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       labels:

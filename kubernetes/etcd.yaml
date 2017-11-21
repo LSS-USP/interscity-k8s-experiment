@@ -21,6 +21,8 @@ metadata:
     etcd_node: etcd0
   name: etcd0
 spec:
+  nodeSelector:
+    cloud.google.com/gke-nodepool: default-pool
   containers:
   - command:
     - /usr/local/bin/etcd
@@ -80,6 +82,8 @@ metadata:
     etcd_node: etcd1
   name: etcd1
 spec:
+  nodeSelector:
+    cloud.google.com/gke-nodepool: default-pool
   containers:
   - command:
     - /usr/local/bin/etcd
@@ -139,6 +143,8 @@ metadata:
     etcd_node: etcd2
   name: etcd2
 spec:
+  nodeSelector:
+    cloud.google.com/gke-nodepool: default-pool
   containers:
   - command:
     - /usr/local/bin/etcd

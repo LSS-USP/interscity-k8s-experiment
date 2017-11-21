@@ -77,6 +77,8 @@ kind: Deployment
 metadata:
   name: kong-rc
 spec:
+  nodeSelector:
+    cloud.google.com/gke-nodepool: default-pool
   replicas: 3
   template:
     metadata:

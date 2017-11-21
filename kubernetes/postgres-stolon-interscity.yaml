@@ -14,6 +14,8 @@ spec:
         stolon-cluster: "cluster-xp"
         stolon-sentinel: "true"
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: postgres-pool
       containers:
       - name: stolon-sentinel
         image: sorintlab/stolon:master-pg9.6
@@ -135,6 +137,8 @@ spec:
         stolon-cluster: "cluster-xp"
         stolon-proxy: "true"
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: postgres-pool
       containers:
       - name: stolon-proxy
         image: sorintlab/stolon:master-pg9.6

@@ -39,6 +39,8 @@ spec:
       labels:
         role: postgres-interscity
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: default-pool
       terminationGracePeriodSeconds: 10
       containers:
         - name: postgres

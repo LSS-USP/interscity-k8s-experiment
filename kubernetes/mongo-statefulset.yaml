@@ -31,13 +31,15 @@ metadata:
   name: mongo
 spec:
   serviceName: "mongo"
-  replicas: 3
+  replicas: 4
   template:
     metadata:
       labels:
         role: mongo
         environment: test
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: mongo-pool
       terminationGracePeriodSeconds: 10
       containers:
         - name: mongo
@@ -51,7 +53,7 @@ spec:
           resources:
             requests:
               memory: "200M"
-              cpu: "0.2"
+              cpu: "0.4"
           ports:
             - containerPort: 27017
           volumeMounts:

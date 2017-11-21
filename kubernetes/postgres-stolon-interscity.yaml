@@ -57,6 +57,8 @@ spec:
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: postgres-pool
       terminationGracePeriodSeconds: 10
       containers:
       - name: stolon-keeper

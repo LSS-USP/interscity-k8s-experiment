@@ -20,8 +20,15 @@ create_cluster () {
   echo "Creating the cluster"
 
   gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES
-  #gcloud deployment-manager deployments create cluster --config cluster/cluster.yaml 
-  gcloud container clusters get-credentials $CLUSTER 
+
+  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --enable-autoscaling --min-nodes=3 --max-nodes=5
+  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --enable-autoscaling --min-nodes=3 --max-nodes=5
+
+  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-8  --num-nodes=1 --cluster=$CLUSTER --preemptible
+
+  gcloud container clusters get-credentials $CLUSTER
+
+  #gcloud compute instances list --format='value[separator=","](name)'
 }
 
 create_pods () {
@@ -141,13 +148,8 @@ create_interscity_services() {
 }
 
 create_simulator() {
-  gcloud container node-pools create simulator-pool --machine-type=n1-standard-8  --num-nodes=1 --cluster=$CLUSTER --preemptible
-
   echo "Deploying Simulator"
   kubectl create -f kubernetes/simulator.yaml
-
-  #echo "Run Experiment"
-  #kubectl create -f kubernetes/experiment.yaml
 }
 
 enable_autoscaling(){
@@ -159,16 +161,16 @@ enable_autoscaling(){
 }
 
 delete_simulator() {
-  gcloud container node-pools delete simulator-pool --cluster=$CLUSTER
-
   echo "Deploying Simulator"
   kubectl delete -f kubernetes/simulator.yaml
-
-  #echo "Run Experiment"
-  #kubectl create -f kubernetes/experiment.yaml
 }
 
 delete_cluster() {
+  echo "Deleting node-pools"
+  yes | gcloud container node-pools delete simulator-pool --cluster=$CLUSTER
+  yes | gcloud container node-pools delete mongo-pool --cluster=$CLUSTER
+  yes | gcloud container node-pools delete postgres-pool --cluster=$CLUSTER
+
   echo "Deleting the cluster"
   yes | gcloud container clusters delete $CLUSTER --zone $ZONE
   echo "Cluster deleted!"

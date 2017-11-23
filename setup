@@ -4,9 +4,9 @@ FILE_DIR=`perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`
 BASE_DIR=`dirname $FILE_DIR`/..
 CLUSTER=cluster-xp
 ZONE=us-central1-f
-MACHINE_TYPE=n1-standard-1
+MACHINE_TYPE=n1-highmem-2
 NUM_NODES=8
-MIN_NODES=6
+MIN_NODES=8
 MAX_NODES=40
 
 verify () {
@@ -21,10 +21,10 @@ create_cluster () {
 
   gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES
 
-  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --enable-autoscaling --min-nodes=3 --max-nodes=5
-  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --enable-autoscaling --min-nodes=3 --max-nodes=5
+  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
 
-  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-8  --num-nodes=1 --cluster=$CLUSTER --preemptible
+  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-8  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 
   gcloud container clusters get-credentials $CLUSTER
 
@@ -153,7 +153,7 @@ create_simulator() {
 }
 
 enable_autoscaling(){
-  kubectl autoscale deployment data-collector --cpu-percent=70 --min=2 --max=10
+  kubectl autoscale deployment data-collector --cpu-percent=70 --min=4 --max=10
   kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=2 --max=10
   kubectl autoscale deployment resource-discoverer --cpu-percent=70 --min=2 --max=10
   kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=2 --max=10
@@ -166,14 +166,15 @@ delete_simulator() {
 }
 
 delete_cluster() {
+  echo "Deleting the cluster"
+  yes | gcloud container clusters delete $CLUSTER --zone $ZONE
+  echo "Cluster deleted!"
+
   echo "Deleting node-pools"
   yes | gcloud container node-pools delete simulator-pool --cluster=$CLUSTER
   yes | gcloud container node-pools delete mongo-pool --cluster=$CLUSTER
   yes | gcloud container node-pools delete postgres-pool --cluster=$CLUSTER
 
-  echo "Deleting the cluster"
-  yes | gcloud container clusters delete $CLUSTER --zone $ZONE
-  echo "Cluster deleted!"
   echo "Deleting disks"
   names=`gcloud compute disks list | sed -n '1!p' | while read -r instance; do printf $instance | awk '{print $1}'; done`
   for name in $names; do

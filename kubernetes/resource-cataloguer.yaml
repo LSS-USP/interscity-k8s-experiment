@@ -9,7 +9,6 @@ spec:
   ports:
   - port: 3000
     name: http
-  clusterIP: None
   selector:
     app: resource-catalog
 

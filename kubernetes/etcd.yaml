@@ -83,7 +83,7 @@ metadata:
   name: etcd1
 spec:
   nodeSelector:
-    cloud.google.com/gke-nodepool: default-pool
+    cloud.google.com/gke-nodepool: postgres-pool
   containers:
   - command:
     - /usr/local/bin/etcd

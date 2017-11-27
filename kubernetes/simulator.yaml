@@ -27,7 +27,7 @@ spec:
         cloud.google.com/gke-nodepool: simulator-pool
       containers:
       - name: simulator
-        image: ezambomsantana/interscsimulator:latest
+        image: ezambomsantana/interscsimulator:0.1-0.1-10000
         workingDir: /src/mock-simulators/smart_city_model/src
         env:
         - name: USER

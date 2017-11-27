@@ -1,37 +1,40 @@
 apiVersion: v1
 kind: Service
 metadata:
-  # The required headless service for StatefulSets
-  name: resource-discoverer
+  name: resource-discovery
   labels:
-    app: resource-discoverer
+    app: resource-discovery
+  annotations:
+    cloud.google.com/load-balancer-type: "internal"
 spec:
+  type: LoadBalancer
   ports:
   - port: 3000
-    name: http
-  clusterIP: None
+    name: resource-discovery
+    protocol: TCP
   selector:
-    app: resource-discoverer
+    app: resource-discovery
 
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: resource-discoverer
+  name: resource-discovery
   labels:
-    name: resource-discoverer
+    name: resource-discovery
 spec:
   replicas: 2
   template:
     metadata:
       labels:
-        name: resource-discoverer
+        name: resource-discovery
+        app: resource-discovery
     spec:
       nodeSelector:
         cloud.google.com/gke-nodepool: default-pool
       containers:
-        - name: resource-discoverer
-          image: arthurmde/resource-discoverer:0.2-0.4-exp2
+        - name: resource-discovery
+          image: arthurmde/resource-discoverer:0.2-0.5-exp2
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -39,20 +42,22 @@ spec:
               path: /health_check
               port: 3000
             initialDelaySeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 30
           readinessProbe:
             httpGet:
               path: /health_check
               port: 3000
             initialDelaySeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 30
           env:
+            - name: RAILS_MAX_THREADS
+              value: '20'
             - name: RABBITMQ_HOST
               value: 'rabbitmq'
             - name: KONG_URI
               value: 'http://kong-admin:8001'
             - name: REGISTER_METHOD
-              value: 'target'
+              value: 'api'
             - name: DATACOLLECTOR_HOST
               value: 'kong-proxy:8000/collector'
             - name: CATALOGUER_HOST
@@ -61,7 +66,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: [ "/bin/sh", "-c", "rm tmp/pids/server.pid && export SELF_HOST=$MY_POD_IP:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
+          command: [ "/bin/sh", "-c", "apt install curl -y && export SELF_HOST=resource-discovery:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
           resources:
             requests:
               memory: "200M"

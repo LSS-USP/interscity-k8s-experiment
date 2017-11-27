@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: resource-cataloguer-migration
-        image: arthurmde/resource-cataloguer:0.2-0.3-exp2
+        image: arthurmde/resource-cataloguer:0.2-0.6-exp2
         env:
           - name: POSTGRES_USER
             value: stolon
@@ -24,7 +24,7 @@ spec:
           - name: KONG_URI
             value: 'http://kong-admin:8001'
           - name: REGISTER_METHOD
-            value: 'target'
+            value: 'none'
           - name: PGPASSWORD
             value: 'interscity'
         command:

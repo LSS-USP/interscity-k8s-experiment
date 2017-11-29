@@ -22,7 +22,7 @@ create_cluster () {
   gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES
 
   gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
-  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=2 --cluster=$CLUSTER --preemptible --zone $ZONE
 
   gcloud container node-pools create simulator-pool --machine-type=n1-highmem-8  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 

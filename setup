@@ -160,7 +160,14 @@ enable_autoscaling(){
   kubectl autoscale deployment kong-rc --cpu-percent=70 --min=3 --max=10
 }
 
+copy_simulator_output(){
+  echo "Copying output to /tmp/response_time.csv"
+  pod_name=`kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep simulator | head -1`
+  kubectl cp default/$pod_name:/src/mock-simulators/smart_city_model/output/response_time.csv /tmp/response_time.csv
+}
+
 delete_simulator() {
+  copy_simulator_output
   echo "Deploying Simulator"
   kubectl delete -f kubernetes/simulator.yaml
 }
@@ -296,4 +303,8 @@ fi
 
 if [ "$1" = "stop" ]; then
   delete_simulator
+fi
+
+if [ "$1" = "copy" ]; then
+  copy_simulator_output
 fi

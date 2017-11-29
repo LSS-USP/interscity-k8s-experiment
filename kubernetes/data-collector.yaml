@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  # The required headless service for StatefulSets
   name: data-collector
   labels:
     app: data-collector
+  annotations:
+    cloud.google.com/load-balancer-type: "internal"
 spec:
+  type: LoadBalancer
   ports:
   - port: 3000
-    name: http
-  clusterIP: None
+    name: data-collector
+    protocol: TCP
   selector:
     app: data-collector
 
@@ -26,12 +28,13 @@ spec:
     metadata:
       labels:
         name: data-collector
+        app: data-collector
     spec:
       nodeSelector:
         cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: data-collector
-          image: arthurmde/data-collector:0.2-0.3-exp2
+          image: arthurmde/data-collector:0.2-0.12-exp2
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -39,36 +42,38 @@ spec:
               path: /health_check
               port: 3000
             initialDelaySeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 30
           readinessProbe:
             httpGet:
               path: /health_check
               port: 3000
             initialDelaySeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 30
           env:
+            - name: RAILS_MAX_THREADS
+              value: '25'
             - name: MONGO_USER
               value: 'admin'
             - name: MONGO_PASSWORD
               value: 'admin'
-            - name: MONGO_HOST
-              value: 'mongo'
-            - name: MONGO_PORT
-              value: '27017'
+            - name: MONGO_HOSTS
+              value: "'mongo-0.mongo:27017','mongo-1.mongo:27017','mongo-2.mongo:27017','mongo-3.mongo:27017'"
+            - name: MONGO_POOL_SIZE
+              value: '25'
+            - name: MONGO_REPLICA_SET
+              value: 'rs0'
             - name: RABBITMQ_HOST
               value: 'rabbitmq'
             - name: KONG_URI
               value: 'http://kong-admin:8001'
             - name: REGISTER_METHOD
-              value: 'target'
+              value: 'api'
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: [ "/bin/sh", "-c", "rm tmp/pids/server.pid && export SELF_HOST=$MY_POD_IP:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
+          command: [ "/bin/sh", "-c", "apt install curl -y && export SELF_HOST=data-collector:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
           resources:
             requests:
               memory: "200M"
               cpu: "0.2"
-            limits:
-              memory: "2G"

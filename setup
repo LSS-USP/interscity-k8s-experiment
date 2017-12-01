@@ -5,7 +5,7 @@ BASE_DIR=`dirname $FILE_DIR`/..
 CLUSTER=cluster-xp
 ZONE=us-central1-f
 MACHINE_TYPE=n1-highmem-2
-NUM_NODES=8
+NUM_NODES=10
 MIN_NODES=8
 MAX_NODES=40
 
@@ -21,8 +21,9 @@ create_cluster () {
 
   gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES
 
-  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
-  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=2 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=8 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create rabbitmq-pool --machine-type=n1-highmem-2 --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 
   gcloud container node-pools create simulator-pool --machine-type=n1-highmem-8  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 
@@ -153,11 +154,11 @@ create_simulator() {
 }
 
 enable_autoscaling(){
-  kubectl autoscale deployment data-collector --cpu-percent=70 --min=4 --max=20
-  kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=2 --max=10
-  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=2 --max=10
-  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=2 --max=10
-  kubectl autoscale deployment kong-rc --cpu-percent=70 --min=3 --max=10
+  kubectl autoscale deployment data-collector --cpu-percent=70 --min=4 --max=80
+  kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=2 --max=20
+  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=12 --max=20
+  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=4 --max=80
+  kubectl autoscale deployment kong-rc --cpu-percent=70 --min=4 --max=20
 }
 
 copy_simulator_output(){
@@ -180,6 +181,7 @@ delete_cluster() {
   echo "Deleting node-pools"
   yes | gcloud container node-pools delete simulator-pool --cluster=$CLUSTER
   yes | gcloud container node-pools delete mongo-pool --cluster=$CLUSTER
+  yes | gcloud container node-pools delete rabbitmq-pool --cluster=$CLUSTER
   yes | gcloud container node-pools delete postgres-pool --cluster=$CLUSTER
 
   echo "Deleting disks"

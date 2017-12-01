@@ -39,14 +39,14 @@ metadata:
   name: rabbitmq
 spec:
   serviceName: "rabbitmq"
-  replicas: 5
+  replicas: 1
   template:
     metadata:
       labels:
         app: rabbitmq
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: default-pool
+        cloud.google.com/gke-nodepool: rabbitmq-pool
       containers:
       - name: rabbitmq
         image: rabbitmq:3.6.6-management-alpine
@@ -78,7 +78,7 @@ spec:
         resources:
           requests:
             memory: "700M"
-            cpu: "0.2"
+            cpu: "0.3"
           limits:
             memory: "2.5G"
         ports:

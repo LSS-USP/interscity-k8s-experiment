@@ -1,3 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stolon-postgres-load-balacing
+  labels:
+    app: stolon-postgres-load-balacing
+  annotations:
+    cloud.google.com/load-balancer-type: "internal"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5432
+    name: stolon-postgres-load-balacing
+    protocol: TCP
+  selector:
+    app: stolon-keeper
+
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -51,7 +68,7 @@ metadata:
   name: stolon-keeper
 spec:
   serviceName: "stolon-keeper"
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       labels:

@@ -34,32 +34,32 @@ spec:
         cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: data-collector
-          image: arthurmde/data-collector:0.2-0.12-exp2
+          image: arthurmde/data-collector:0.2-0.13-exp2
           ports:
             - containerPort: 3000
           livenessProbe:
             httpGet:
               path: /health_check
               port: 3000
-            initialDelaySeconds: 30
-            timeoutSeconds: 30
+            initialDelaySeconds: 120
+            timeoutSeconds: 120
           readinessProbe:
             httpGet:
               path: /health_check
               port: 3000
-            initialDelaySeconds: 30
-            timeoutSeconds: 30
+            initialDelaySeconds: 120
+            timeoutSeconds: 120
           env:
             - name: RAILS_MAX_THREADS
-              value: '25'
+              value: '150'
             - name: MONGO_USER
               value: 'admin'
             - name: MONGO_PASSWORD
               value: 'admin'
-            - name: MONGO_HOSTS
-              value: "'mongo-0.mongo:27017','mongo-1.mongo:27017','mongo-2.mongo:27017','mongo-3.mongo:27017'"
+            - name: MONGO_ADDRESSES
+              value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo,mongo-3.mongo,mongo-4.mongo,mongo-5.mongo,mongo-7.mongo,mongo-6.mongo"
             - name: MONGO_POOL_SIZE
-              value: '25'
+              value: '150'
             - name: MONGO_REPLICA_SET
               value: 'rs0'
             - name: RABBITMQ_HOST
@@ -76,4 +76,4 @@ spec:
           resources:
             requests:
               memory: "200M"
-              cpu: "0.2"
+              cpu: "0.5"

@@ -34,7 +34,7 @@ spec:
         cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: data-collector
-          image: arthurmde/data-collector:0.2-0.13-exp2
+          image: arthurmde/data-collector:0.2-0.16-exp2
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -57,11 +57,15 @@ spec:
             - name: MONGO_PASSWORD
               value: 'admin'
             - name: MONGO_ADDRESSES
-              value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo,mongo-3.mongo,mongo-4.mongo,mongo-5.mongo,mongo-7.mongo,mongo-6.mongo"
+              value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo"
+            - name: MONGO_CACHE_ADDRESSES
+              value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache,mongo-cache-3.mongo-cache"
             - name: MONGO_POOL_SIZE
               value: '150'
             - name: MONGO_REPLICA_SET
               value: 'rs0'
+            - name: MONGO_CACHE_REPLICA_SET
+              value: 'rs1'
             - name: RABBITMQ_HOST
               value: 'rabbitmq'
             - name: KONG_URI
@@ -72,7 +76,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: [ "/bin/sh", "-c", "apt install curl -y && export SELF_HOST=data-collector:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
+          command: [ "/bin/sh", "-c", "apt install curl -y --fix-missing && export SELF_HOST=data-collector:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
           resources:
             requests:
               memory: "200M"

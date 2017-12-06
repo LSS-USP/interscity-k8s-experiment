@@ -18,4 +18,4 @@ spec:
           - name: KONG_PG_HOST
             value: postgres
         command: [ "/bin/sh", "-c", "kong migrations up" ]
-      restartPolicy: Never
+      restartPolicy: OnFailure

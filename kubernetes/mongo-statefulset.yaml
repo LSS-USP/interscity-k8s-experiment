@@ -25,13 +25,27 @@ spec:
   selector:
     role: mongo
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-cache
+  labels:
+    name: mongo-cache
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  clusterIP: None
+  selector:
+    role: mongo-cache
+---
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   name: mongo
 spec:
   serviceName: "mongo"
-  replicas: 8
+  replicas: 3
   template:
     metadata:
       labels:
@@ -69,6 +83,62 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: mongo-persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "fast"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 30Gi
+
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: mongo-cache
+spec:
+  serviceName: "mongo-cache"
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        role: mongo-cache
+        environment: test
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: mongo-pool
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo-cache
+          image: percona/percona-server-mongodb:latest
+          securityContext:
+            runAsUser: 0
+            privileged: true
+          command:
+            - /bin/sh
+            - -c
+            - >
+              chmod -R go+w /data/db;
+              mongod --replSet rs1 --storageEngine inMemory --smallfiles --noprealloc;
+          resources:
+            requests:
+              memory: "800M"
+              cpu: "0.4"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-cache-persistent-storage
+              mountPath: /data/db
+        - name: mongo-cache-sidecar
+          image: cvallance/mongo-k8s-sidecar
+          env:
+            - name: MONGO_SIDECAR_POD_LABELS
+              value: "role=mongo-cache,environment=test"
+            - name: AUTH
+              value: "no"
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-cache-persistent-storage
       annotations:
         volume.beta.kubernetes.io/storage-class: "fast"
     spec:

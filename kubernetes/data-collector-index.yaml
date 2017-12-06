@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-collector-index
+spec:
+  template:
+    metadata:
+      name: data-collector-index
+    spec:
+      containers:
+      - name: data-collector-index
+        image: arthurmde/data-collector:0.2-0.16-exp2
+        env:
+          - name: MONGO_USER
+            value: 'admin'
+          - name: MONGO_PASSWORD
+            value: 'admin'
+          - name: MONGO_ADDRESSES
+            value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo"
+          - name: MONGO_CACHE_ADDRESSES
+            value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache,mongo-cache-3.mongo-cache"
+          - name: MONGO_POOL_SIZE
+            value: '150'
+          - name: MONGO_REPLICA_SET
+            value: 'rs0'
+          - name: MONGO_CACHE_REPLICA_SET
+            value: 'rs1'
+          - name: RABBITMQ_HOST
+            value: 'rabbitmq'
+          - name: KONG_URI
+            value: 'http://kong-admin:8001'
+          - name: REGISTER_METHOD
+            value: 'none'
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        command:
+        - /bin/sh
+        - -c
+        - >
+          rake db:mongoid:remove_indexes db:mongoid:create_indexes
+      restartPolicy: Never

@@ -68,7 +68,7 @@ metadata:
   name: stolon-keeper
 spec:
   serviceName: "stolon-keeper"
-  replicas: 4
+  replicas: 6
   template:
     metadata:
       labels:

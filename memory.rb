@@ -55,24 +55,25 @@ services.each do |service, data|
 end
 
 to_csv = {
-  time: [],
+  timestamp: [],
+  time: []
 }
 
 services.each do |service, data|
   data[:history].each do |time, size|
-    to_csv[:time] << time
+    to_csv[:timestamp] << time
   end
 end
 
-to_csv[:time] = to_csv[:time].uniq.sort
+to_csv[:timestamp] = to_csv[:timestamp].uniq.sort
 
 services.each do |service, data|
   to_csv[service] = []
   i = 0
   history_hash = data[:history].to_h
-  to_csv[:time].each do |t|
-    if history_hash.has_key? to_csv[:time][i]
-      to_csv[service] << history_hash[to_csv[:time][i]]
+  to_csv[:timestamp].each do |t|
+    if history_hash.has_key? to_csv[:timestamp][i]
+      to_csv[service] << history_hash[to_csv[:timestamp][i]]
     else
       if i == 0
         to_csv[service] << 0
@@ -82,6 +83,12 @@ services.each do |service, data|
     end
     i += 1
   end
+end
+
+to_csv[:time] << 0
+first = to_csv[:timestamp][0]
+(1..to_csv[:timestamp].size).times do |i|
+  puts i
 end
 
 puts to_csv

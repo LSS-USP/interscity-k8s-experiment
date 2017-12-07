@@ -9,16 +9,16 @@ spec:
     spec:
       containers:
       - name: data-collector-index
-        image: arthurmde/data-collector:0.2-0.16-exp2
+        image: arthurmde/data-collector:0.2-0.17-exp2
         env:
           - name: MONGO_USER
             value: 'admin'
           - name: MONGO_PASSWORD
             value: 'admin'
           - name: MONGO_ADDRESSES
-            value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo"
+            value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo,mongo-3.mongo,mongo-4.mongo"
           - name: MONGO_CACHE_ADDRESSES
-            value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache,mongo-cache-3.mongo-cache"
+            value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache"
           - name: MONGO_POOL_SIZE
             value: '150'
           - name: MONGO_REPLICA_SET

@@ -5,13 +5,14 @@ data = JSON.parse(file)
 
 services = {
   "data-collector": {total: 0, instances: [], changes: {}, history: []},
-  "resource-adaptor": {total: 0, instances: [], changes: {}, history: []},
+#  "resource-adaptor": {total: 0, instances: [], changes: {}, history: []},
   "resource-catalog": {total: 0, instances: [], changes: {}, history: []},
   "resource-discovery": {total: 0, instances: [], changes: {}, history: []},
   "kong": {total: 0, instances: [], changes: {}, history: []},
   "rabbitmq": {total: 0, instances: [], changes: {}, history: []},
   "postgres": {total: 0, instances: [], changes: {}, history: []},
   "mongo": {total: 0, instances: [], changes: {}, history: []},
+  "mongo-cache": {total: 0, instances: [], changes: {}, history: []},
 }
 
 data["data"].each do |resource|
@@ -53,4 +54,34 @@ services.each do |service, data|
   end
 end
 
-puts services
+to_csv = {
+  time: [],
+}
+
+services.each do |service, data|
+  data[:history].each do |time, size|
+    to_csv[:time] << time
+  end
+end
+
+to_csv[:time] = to_csv[:time].uniq.sort
+
+services.each do |service, data|
+  to_csv[service] = []
+  i = 0
+  history_hash = data[:history].to_h
+  to_csv[:time].each do |t|
+    if history_hash.has_key? to_csv[:time][i]
+      to_csv[service] << history_hash[to_csv[:time][i]]
+    else
+      if i == 0
+        to_csv[service] << 0
+      else
+        to_csv[service] << to_csv[service][i-1]
+      end
+    end
+    i += 1
+  end
+end
+
+puts to_csv

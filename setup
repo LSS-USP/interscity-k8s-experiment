@@ -5,9 +5,9 @@ BASE_DIR=`dirname $FILE_DIR`/..
 CLUSTER=cluster-xp
 ZONE=us-central1-f
 MACHINE_TYPE=n1-highmem-2
-NUM_NODES=13
-MIN_NODES=8
-MAX_NODES=40
+NUM_NODES=15
+MIN_NODES=15
+MAX_NODES=44
 
 verify () {
   if [ $? != 0 ]; then
@@ -21,7 +21,7 @@ create_cluster () {
 
   gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES
 
-  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=7 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=8 --cluster=$CLUSTER --preemptible --zone $ZONE
   gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=4 --cluster=$CLUSTER --preemptible --zone $ZONE
   gcloud container node-pools create rabbitmq-pool --machine-type=n1-highmem-2 --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 
@@ -109,24 +109,24 @@ create_interscity_services() {
 
   #=====================================================================
 
-  echo "Preparing Resource Adaptor database"
-  kubectl create -f kubernetes/resource-adaptor-migration.yaml
+  #echo "Preparing Resource Adaptor database"
+  #kubectl create -f kubernetes/resource-adaptor-migration.yaml
 
-  echo "Running job for database migration"
-  running=`kubectl get pods | grep resource-adaptor-migration | wc -l`
-  while [ $running -eq 1 ]
-  do
-    sleep 3s
-    running=`kubectl get pods | grep resource-adaptor-migration | wc -l`
-    echo -n '.'
-  done
+  #echo "Running job for database migration"
+  #running=`kubectl get pods | grep resource-adaptor-migration | wc -l`
+  #while [ $running -eq 1 ]
+  #do
+  #  sleep 3s
+  #  running=`kubectl get pods | grep resource-adaptor-migration | wc -l`
+  #  echo -n '.'
+  #done
 
-  echo
-  echo "Deleting job of resource-adaptor database migration"
-  kubectl delete -f kubernetes/resource-adaptor-migration.yaml
+  #echo
+  #echo "Deleting job of resource-adaptor database migration"
+  #kubectl delete -f kubernetes/resource-adaptor-migration.yaml
 
-  echo "Deploying Resource Cataloguer"
-  kubectl create -f kubernetes/resource-adaptor.yaml
+  #echo "Deploying Resource Cataloguer"
+  #kubectl create -f kubernetes/resource-adaptor.yaml
 
   #=====================================================================
   
@@ -174,11 +174,11 @@ create_simulator() {
 }
 
 enable_autoscaling(){
-  kubectl autoscale deployment data-collector --cpu-percent=70 --min=6 --max=80
-  kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=1 --max=20
-  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=12 --max=20
-  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=6 --max=80
-  kubectl autoscale deployment kong-rc --cpu-percent=70 --min=4 --max=20
+  kubectl autoscale deployment data-collector --cpu-percent=70 --min=2 --max=80
+  #kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=1 --max=20
+  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=12 --max=30
+  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=2 --max=80
+  kubectl autoscale deployment kong-rc --cpu-percent=70 --min=3 --max=40
 }
 
 copy_simulator_output(){
@@ -281,9 +281,9 @@ delete_pods() {
   kubectl delete -f kubernetes/resource-cataloguer-migration.yaml
   kubectl delete -f kubernetes/resource-cataloguer.yaml
 
-  echo "Deleting Resource Adaptor"
-  kubectl delete -f kubernetes/resource-adaptor-migration.yaml
-  kubectl delete -f kubernetes/resource-adaptor.yaml
+  #echo "Deleting Resource Adaptor"
+  #kubectl delete -f kubernetes/resource-adaptor-migration.yaml
+  #kubectl delete -f kubernetes/resource-adaptor.yaml
 
   echo "Deleting Data Collector"
   kubectl delete -f kubernetes/data-collector-index.yaml

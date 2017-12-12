@@ -34,7 +34,7 @@ spec:
         cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: resource-discovery
-          image: arthurmde/resource-discoverer:0.2-0.5-exp2
+          image: arthurmde/resource-discoverer:0.2-0.6-exp2
           ports:
             - containerPort: 3000
           livenessProbe:
@@ -66,7 +66,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          command: [ "/bin/sh", "-c", "apt update && apt install curl -y && export SELF_HOST=resource-discovery:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
+          command: [ "/bin/sh", "-c", "rm /resource-discoverer/tmp/pids/server.pid && apt update && apt install curl -y && export SELF_HOST=resource-discovery:3000 && bundle exec rails s -p 3000 -b 0.0.0.0" ]
           resources:
             requests:
               memory: "400M"

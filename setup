@@ -5,9 +5,9 @@ BASE_DIR=`dirname $FILE_DIR`/..
 CLUSTER=cluster-xp
 ZONE=us-central1-f
 MACHINE_TYPE=n1-highmem-2
-NUM_NODES=24
-MIN_NODES=24
-MAX_NODES=24
+NUM_NODES=23
+MIN_NODES=23
+MAX_NODES=23
 
 verify () {
   if [ $? != 0 ]; then
@@ -19,13 +19,13 @@ verify () {
 create_cluster () {
   echo "Creating the cluster"
 
-  gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES --disk-size=60
+  gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES --disk-size=50
 
-  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=7 --cluster=$CLUSTER --preemptible --zone $ZONE
-  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=8 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=6 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=6 --cluster=$CLUSTER --preemptible --zone $ZONE
   gcloud container node-pools create rabbitmq-pool --machine-type=n1-highmem-2 --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 
-  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-8  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
+  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-16  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE
 
   gcloud container clusters get-credentials $CLUSTER
 
@@ -176,15 +176,24 @@ create_simulator() {
 enable_autoscaling(){
   kubectl autoscale deployment data-collector --cpu-percent=70 --min=3 --max=80
   #kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=1 --max=20
-  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=12 --max=30
+  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=10 --max=50
   kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=3 --max=80
   kubectl autoscale deployment kong-rc --cpu-percent=70 --min=3 --max=40
+}
+
+disable_autoscaling(){
+  kubectl delete hpa data-collector
+  #kubectl delete hpa resource-adaptor
+  kubectl delete hpa resource-discovery
+  kubectl delete hpa resource-catalog
+  kubectl delete hpa kong-rc
 }
 
 copy_simulator_output(){
   echo "Copying output to /tmp/response_time.csv"
   pod_name=`kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep simulator | head -1`
   kubectl cp default/$pod_name:/src/mock-simulators/smart_city_model/output/response_time.csv /tmp/response_time.csv
+  kubectl cp default/$pod_name:/src/mock-simulators/smart_city_model/output/events.xml /tmp/events.xml
 }
 
 delete_simulator() {
@@ -256,6 +265,8 @@ delete_cluster() {
 }
 
 delete_pods() {
+  disable_autoscaling
+
   echo "Deleting postgres service"
   kubectl delete -f kubernetes/postgres.yaml
 

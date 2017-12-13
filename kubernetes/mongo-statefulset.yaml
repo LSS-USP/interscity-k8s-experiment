@@ -98,7 +98,7 @@ metadata:
   name: mongo-cache
 spec:
   serviceName: "mongo-cache"
-  replicas: 4
+  replicas: 3
   template:
     metadata:
       labels:

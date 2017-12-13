@@ -20,6 +20,10 @@ As long as we use GKE's elastic features, you will need to create a new project
 and [enable billing](https://support.google.com/cloud/answer/6293499?hl=pt-br#enable-billing)
 for it.
 
+The [](setup) script has some variables that define the machine types and the
+number of instances for each node pools we are creating. If you are going to
+create a cluster with 86 CPUs, you must increase your quotas on GCloud service
+(this action may require additional payments).
 You must also increase the quota assigned for your project to create load balacers.
 By default, GKE will allocate a number of "In-use IP addresses" equal to the
 number of VMs in your cluster. However, you will need to expose the InterSCity
@@ -58,6 +62,81 @@ sudo apt-get install kubectl
 ```sh
 gcloud config set compute/zone us-central1-f
 ```
+
+* Create the Kubernetes cluster to run the experiment:
+```sh
+./setup create-all
+```
+This will take some time.
+
+* Run the experiment:
+```sh
+./setup run
+```
+This will instantiate a unique pod of the InterSCSimulator in the simulator-pool
+which will, after a while, create the actors, setup, and run the simulation.
+I suggest you to follow the simulator's pod logs.
+
+The entire experiment should take about 2:30 hours. However, you can get
+partial results with the following command whenever you want:
+```sh
+./setup copy
+```
+This command will copy two files from simulator's pod:
+* **/tmp/response_time.csv** -> contains the data related to the requests
+performed by the simulator to the InterSCity platform
+* **/tmp/events.xml** -> contains simulator-specific data related to events
+that happened during the simulation.
+
+Right now, we do not copy these files automatically at the end of the experiment.
+For doing so, you need to copy the file by yourself running the abovementioned
+command. After all, you can also finalize the experiment by running:
+```sh
+./setup stop
+```
+This will also copy the two files for your local machine.
+
+## Compile the results
+
+* Dependencies: R, Rscript, ggplot2 R lib
+
+* We created the script [analysis.R](analysis.R) to read the **response_time.csv**
+file and generate the graphs related to the experiment. We suggest you to 
+create a new directory on the [outputs](outputs) folder (i.e.: 1st_experiment)
+and move the **response_time.csv** file to this new directory. By doing so,
+you can run the R script with:
+```sh
+Rscript analysis.R outputs/1st_experiment response_time.csv
+```
+
+This script will generate the experiment graphs on the same folder you passed
+via the first argument (in this case, outputs/1st_experiment).
+
+
+## Delete and Create pods
+
+If you want to run the experiment several times, there is no need
+to re-create the entire cluster. You can remove the pods and then re-create
+them with the following commands:
+
+```sh
+./setup delete-pods
+./setup create-pods
+```
+
+## Delete Everything - READ WITH ATTENTION
+
+I've create an option on **setup** script to remove all my resources
+from GCloud to prevent me from being charged for things I was not expecting.
+So, if you have other resources in GCloud that have nothing to do with this
+experiment, do not run the remove-all command.
+
+Having said that, when you want to remove the cluster and other resources related to the
+experiment, run the following command:
+```sh
+./setup delete-all
+```
+
 
 # References
 

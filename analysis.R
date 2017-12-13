@@ -26,35 +26,40 @@ require("ggplot2")
 
 data['request_sum'] <- 1
 data['request_sum'] <- sapply(data['request_sum'], function(x) as.numeric(x))
-horas <- c()
+hours <- c()
 val <- min(data$request_time_mili)
-for (x in 1:50) {
-  horas <- c(horas, val)
-  val <- val + 60000
+interval <- 60000
+n <- (max(data$request_time_mili) - min(data$request_time_mili))/interval
+for (x in 1:n) {
+  hours <- c(hours, val)
+  val <- val + interval
 }
 
-time <- aggregate(data$request_sum, list(cut(data$request_time_mili, breaks=horas)), sum)
+time <- aggregate(data$request_sum, list(cut(data$request_time_mili, breaks=hours)), sum)
+#time$hours <- c(1:n)
 
 png('load.png')
 ggplot(data=time, aes(x=Group.1, y=request_sum, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
-  xlab("Hora do Dia") + ylab("Número de Viagens (x 1000)")
+  xlab("Experiment Time (min)") + ylab("Perfomed Requests")
 dev.off()
 
 ##############################################################################
 
-horas <- c()
+hours <- c()
 val <- min(data$response_time_mili)
-for (x in 1:50) {
-  horas <- c(horas, val)
-  val <- val + 60000
+interval <- 60000
+n <- (max(data$response_time_mili) - min(data$response_time_mili))/interval
+for (x in 1:n) {
+  hours <- c(hours, val)
+  val <- val + interval
 }
 
-time <- aggregate(data$request_sum, list(cut(data$response_time_mili, breaks=horas)), sum)
-time$horas <- c(1:49)
+time <- aggregate(data$request_sum, list(cut(data$response_time_mili, breaks=hours)), sum)
+#time$hours <- c(1:n)
 
 png('throughput.png')
-ggplot(data=time, aes(x=horas, y=request_sum, group=1)) +
+ggplot(data=time, aes(x=Group.1, y=request_sum, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   xlab("Hora do Dia") + ylab("Número de Viagens (x 1000)")
 dev.off()
@@ -91,13 +96,13 @@ success['simulation_response'] <- success['simulation_time'] + success['response
 success['simulation_response'] <- sapply(success['simulation_response'], function(x) as.numeric(x))
 
 
-horas <- c()
+hours <- c()
 val <- min(data$request_time_mili)
 for (x in 1:50) {
-  horas <- c(horas, val)
+  hours <- c(hours, val)
   val <- val + 60000
 }
-time <- aggregate(success$response_time, list(cut(success$request_time_mili, breaks=horas)), mean)
+time <- aggregate(success$response_time, list(cut(success$request_time_mili, breaks=hours)), mean)
 
 png('response_time.png')
 ggplot(data=time, aes(x=Group.1, y=x, group=1)) +

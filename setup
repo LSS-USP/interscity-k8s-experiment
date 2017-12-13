@@ -35,6 +35,14 @@ create_cluster () {
 create_pods () {
   echo "Creating postgres service"
   kubectl create -f kubernetes/postgres.yaml
+  pod_name=`kubectl get pods | grep 'postgres.*Running\|Running.*postgres' | head -1`
+  echo "Postgres POD name: $pod_name"
+  while [ -z "$pod_name" ]
+  do
+    sleep 3
+    pod_name=`kubectl get pods | grep 'postgres.*Running\|Running.*postgres' | head -1`
+    echo -n '.'
+  done
   
   echo "Preparing database"
   kubectl create -f kubernetes/kong_migration_postgres.yaml

@@ -87,7 +87,7 @@ end
 
 to_csv[:time] << 0
 first = to_csv[:timestamp][0]
-(1..to_csv[:timestamp].size).times do |i|
+(1..to_csv[:timestamp].size).each do |i|
   puts i
 end
 

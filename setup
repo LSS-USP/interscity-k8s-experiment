@@ -87,6 +87,8 @@ create_pods () {
     printf "yes\n" | kubectl exec $pod_name stolonctl -it -- --cluster-name=cluster-xp --store-backend=etcd --store-endpoints=http://etcd-client:2379 init
   done
 
+  kubectl create -f kubernetes/redis.yaml
+
   create_interscity_services
   enable_autoscaling
 
@@ -182,10 +184,10 @@ create_simulator() {
 }
 
 enable_autoscaling(){
-  kubectl autoscale deployment data-collector --cpu-percent=70 --min=3 --max=80
+  kubectl autoscale deployment data-collector --cpu-percent=70 --min=30 --max=80
   #kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=1 --max=20
-  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=10 --max=50
-  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=3 --max=80
+  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=20 --max=80
+  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=20 --max=80
   kubectl autoscale deployment kong-rc --cpu-percent=70 --min=3 --max=40
 }
 
@@ -295,6 +297,9 @@ delete_pods() {
 
   echo "Deleting Postgres"
   kubectl delete -f kubernetes/postgres-stolon-interscity.yaml
+
+  echo "Deleting Redis"
+  kubectl delete -f kubernetes/redis.yaml
 
   echo "Deleting Resource Cataloguer"
   kubectl delete -f kubernetes/resource-cataloguer-migration.yaml

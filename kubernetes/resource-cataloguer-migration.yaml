@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: resource-cataloguer-migration
-        image: arthurmde/resource-cataloguer:0.2-0.7-exp2
+        image: arthurmde/resource-cataloguer:0.2-0.9-exp2
         env:
           - name: POSTGRES_USER
             value: stolon
@@ -27,6 +27,10 @@ spec:
             value: 'none'
           - name: PGPASSWORD
             value: 'interscity'
+          - name: REDIS_HOST
+            value: "redis"
+          - name: REDIS_PORT
+            value: '6379'
         command:
         - /bin/sh
         - -c

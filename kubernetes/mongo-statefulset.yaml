@@ -45,7 +45,7 @@ metadata:
   name: mongo
 spec:
   serviceName: "mongo"
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
@@ -98,7 +98,7 @@ metadata:
   name: mongo-cache
 spec:
   serviceName: "mongo-cache"
-  replicas: 3
+  replicas: 5
   template:
     metadata:
       labels:

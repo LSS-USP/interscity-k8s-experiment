@@ -31,37 +31,41 @@ spec:
         app: data-collector
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: default-pool
+        cloud.google.com/gke-nodepool: data-collector-pool
       containers:
         - name: data-collector
-          image: arthurmde/data-collector:0.2-0.17-exp2
+          image: arthurmde/data-collector:0.2-0.23-exp2
           ports:
             - containerPort: 3000
           livenessProbe:
             httpGet:
               path: /health_check
               port: 3000
-            initialDelaySeconds: 120
-            timeoutSeconds: 120
+            initialDelaySeconds: 60
+            timeoutSeconds: 60
           readinessProbe:
             httpGet:
               path: /health_check
               port: 3000
-            initialDelaySeconds: 120
-            timeoutSeconds: 120
+            initialDelaySeconds: 60
+            timeoutSeconds: 60
           env:
             - name: RAILS_MAX_THREADS
-              value: '150'
+              value: '5'
+            - name: WEB_CONCURRENCY
+              value: '3'
             - name: MONGO_USER
               value: 'admin'
             - name: MONGO_PASSWORD
               value: 'admin'
             - name: MONGO_ADDRESSES
-              value: "mongo-0.mongo,mongo-1.mongo,mongo-2.mongo,mongo-3.mongo,mongo-4.mongo"
+              value: "mongo-0.mongo,mongo-1.mongo"
             - name: MONGO_CACHE_ADDRESSES
-              value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache,mongo-cache-3.mongo-cache"
+              value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache,mongo-cache-3.mongo-cache,mongo-cache-4.mongo-cache"
             - name: MONGO_POOL_SIZE
-              value: '150'
+              value: '60'
+            - name: MONGO_WAIT_QUEUE_TIMEOUT
+              value: '5'
             - name: MONGO_REPLICA_SET
               value: 'rs0'
             - name: MONGO_CACHE_REPLICA_SET

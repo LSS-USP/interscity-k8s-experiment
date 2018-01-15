@@ -31,7 +31,7 @@ spec:
         app: resource-discovery
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: default-pool
+        cloud.google.com/gke-nodepool: resource-discovery-pool
       containers:
         - name: resource-discovery
           image: arthurmde/resource-discoverer:0.2-0.6-exp2

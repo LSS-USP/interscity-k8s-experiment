@@ -29,7 +29,7 @@ spec:
     name: epmd
   - port: 25672
     name: rabbitmq-dist
-  clusterIP: None
+  type: LoadBalancer
   selector:
     app: rabbitmq
 ---

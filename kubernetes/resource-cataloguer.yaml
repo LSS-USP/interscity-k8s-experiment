@@ -31,7 +31,7 @@ spec:
         app: resource-catalog
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: default-pool
+        cloud.google.com/gke-nodepool: resource-catalog-pool
       containers:
         - name: resource-catalog
           image: arthurmde/resource-cataloguer:0.2-0.9-exp2

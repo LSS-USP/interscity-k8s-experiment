@@ -4,10 +4,10 @@ FILE_DIR=`perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`
 BASE_DIR=`dirname $FILE_DIR`/..
 CLUSTER=cluster-xp
 ZONE=us-central1-f
-MACHINE_TYPE=n1-standard-1
-NUM_NODES=3
-MIN_NODES=3
-MAX_NODES=3
+MACHINE_TYPE=n1-standard-2
+NUM_NODES=25
+MIN_NODES=25
+MAX_NODES=25
 
 verify () {
   if [ $? != 0 ]; then
@@ -21,13 +21,14 @@ create_cluster () {
 
   gcloud beta container clusters create $CLUSTER --zone $ZONE --machine-type $MACHINE_TYPE --num-nodes $NUM_NODES --preemptible --enable-autoscaling --min-nodes=$MIN_NODES --max-nodes=$MAX_NODES --disk-size=50
 
-  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-16  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=50
-  gcloud container node-pools create resource-discovery-pool --machine-type=$MACHINE_TYPE --num-nodes=11  --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
-  gcloud container node-pools create resource-catalog-pool --machine-type=$MACHINE_TYPE --num-nodes=14 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
-  gcloud container node-pools create data-collector-pool --machine-type=$MACHINE_TYPE --num-nodes=14 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
+  gcloud container node-pools create simulator-pool --machine-type=n1-highmem-16  --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
 
-  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=7 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=40
-  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=7 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=40
+  #gcloud container node-pools create resource-discovery-pool --machine-type=$MACHINE_TYPE --num-nodes=11  --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
+  #gcloud container node-pools create resource-catalog-pool --machine-type=$MACHINE_TYPE --num-nodes=14 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
+  #gcloud container node-pools create data-collector-pool --machine-type=$MACHINE_TYPE --num-nodes=14 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=30
+
+  gcloud container node-pools create mongo-pool --machine-type=n1-highmem-2 --num-nodes=5 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=40
+  gcloud container node-pools create postgres-pool --machine-type=n1-highmem-2 --num-nodes=5 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=40
   gcloud container node-pools create rabbitmq-pool --machine-type=n1-highmem-2 --num-nodes=1 --cluster=$CLUSTER --preemptible --zone $ZONE --disk-size=40
 
   gcloud container clusters get-credentials $CLUSTER
@@ -187,11 +188,11 @@ create_simulator() {
 }
 
 enable_autoscaling(){
-  kubectl autoscale deployment data-collector --cpu-percent=70 --min=14 --max=80
+  kubectl autoscale deployment data-collector --cpu-percent=60 --min=4 --max=100
   #kubectl autoscale deployment resource-adaptor --cpu-percent=70 --min=1 --max=20
-  kubectl autoscale deployment resource-discovery --cpu-percent=70 --min=10 --max=80
-  kubectl autoscale deployment resource-catalog --cpu-percent=70 --min=14 --max=80
-  kubectl autoscale deployment kong-rc --cpu-percent=70 --min=4 --max=40
+  kubectl autoscale deployment resource-discovery --cpu-percent=60 --min=4 --max=100
+  kubectl autoscale deployment resource-catalog --cpu-percent=60 --min=4 --max=100
+  kubectl autoscale deployment kong-rc --cpu-percent=60 --min=4 --max=100
 }
 
 disable_autoscaling(){

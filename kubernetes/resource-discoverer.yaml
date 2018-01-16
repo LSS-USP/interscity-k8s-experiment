@@ -31,7 +31,7 @@ spec:
         app: resource-discovery
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: resource-discovery-pool
+        cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: resource-discovery
           image: arthurmde/resource-discoverer:0.2-0.7-exp2
@@ -41,14 +41,14 @@ spec:
             httpGet:
               path: /health_check
               port: 3000
-            initialDelaySeconds: 120
-            timeoutSeconds: 120
+            initialDelaySeconds: 60
+            timeoutSeconds: 60
           readinessProbe:
             httpGet:
               path: /health_check
               port: 3000
-            initialDelaySeconds: 120
-            timeoutSeconds: 120
+            initialDelaySeconds: 60
+            timeoutSeconds: 60
           env:
             - name: RAILS_MAX_THREADS
               value: '512'
@@ -70,4 +70,4 @@ spec:
           resources:
             requests:
               memory: "400M"
-              cpu: "0.1"
+              cpu: "0.2"

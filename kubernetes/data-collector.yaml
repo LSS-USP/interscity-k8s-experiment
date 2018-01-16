@@ -31,7 +31,7 @@ spec:
         app: data-collector
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: data-collector-pool
+        cloud.google.com/gke-nodepool: default-pool
       containers:
         - name: data-collector
           image: arthurmde/data-collector:0.2-0.25-exp2
@@ -61,7 +61,7 @@ spec:
             - name: MONGO_ADDRESSES
               value: "mongo-0.mongo,mongo-1.mongo"
             - name: MONGO_CACHE_ADDRESSES
-              value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache,mongo-cache-3.mongo-cache,mongo-cache-4.mongo-cache"
+              value: "mongo-cache-0.mongo-cache,mongo-cache-1.mongo-cache,mongo-cache-2.mongo-cache"
             - name: MONGO_POOL_SIZE
               value: '60'
             - name: MONGO_WAIT_QUEUE_TIMEOUT
@@ -84,4 +84,4 @@ spec:
           resources:
             requests:
               memory: "200M"
-              cpu: "0.5"
+              cpu: "0.3"

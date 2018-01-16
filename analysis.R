@@ -95,10 +95,12 @@ success$response_time <- success$response_time_mili - success$request_time_mili
 success['simulation_response'] <- success['simulation_time'] + success['response_time']
 success['simulation_response'] <- sapply(success['simulation_response'], function(x) as.numeric(x))
 
+interval <- 60000
+n <- (max(data$request_time_mili) - min(data$request_time_mili))/interval
 
 hours <- c()
 val <- min(data$request_time_mili)
-for (x in 1:50) {
+for (x in 1:n) {
   hours <- c(hours, val)
   val <- val + 60000
 }

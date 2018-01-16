@@ -34,7 +34,7 @@ spec:
         cloud.google.com/gke-nodepool: data-collector-pool
       containers:
         - name: data-collector
-          image: arthurmde/data-collector:0.2-0.23-exp2
+          image: arthurmde/data-collector:0.2-0.25-exp2
           ports:
             - containerPort: 3000
           livenessProbe:

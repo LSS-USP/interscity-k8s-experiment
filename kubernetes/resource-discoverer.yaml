@@ -34,7 +34,7 @@ spec:
         cloud.google.com/gke-nodepool: resource-discovery-pool
       containers:
         - name: resource-discovery
-          image: arthurmde/resource-discoverer:0.2-0.6-exp2
+          image: arthurmde/resource-discoverer:0.2-0.7-exp2
           ports:
             - containerPort: 3000
           livenessProbe:

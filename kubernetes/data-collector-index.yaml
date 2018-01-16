@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: data-collector-index
-        image: arthurmde/data-collector:0.2-0.23-exp2
+        image: arthurmde/data-collector:0.2-0.25-exp2
         env:
           - name: MONGO_USER
             value: 'admin'

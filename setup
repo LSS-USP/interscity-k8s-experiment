@@ -206,7 +206,7 @@ copy_simulator_output(){
   echo "Copying output to /tmp/response_time.csv"
   pod_name=`kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep simulator | head -1`
   kubectl cp default/$pod_name:/src/mock-simulators/smart_city_model/output/response_time.csv /tmp/response_time.csv
-  kubectl cp default/$pod_name:/src/mock-simulators/smart_city_model/output/events.xml /tmp/events.xml
+  kubectl cp default/$pod_name:/src/mock-simulators/smart_city_model/output/events.csv /tmp/events.csv
 }
 
 delete_simulator() {

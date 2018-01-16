@@ -61,7 +61,7 @@ time <- aggregate(data$request_sum, list(cut(data$response_time_mili, breaks=hou
 png('throughput.png')
 ggplot(data=time, aes(x=Group.1, y=request_sum, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
-  xlab("Hora do Dia") + ylab("Número de Viagens (x 1000)")
+  xlab("Hora do Dia") + ylab("Successful Responses")
 dev.off()
 
 
@@ -109,7 +109,7 @@ time <- aggregate(success$response_time, list(cut(success$request_time_mili, bre
 png('response_time.png')
 ggplot(data=time, aes(x=Group.1, y=x, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
-  xlab("Hora do Dia") + ylab("Número de Viagens (x 1000)")
+  xlab("Hora do Dia") + ylab("Response Time (miliseconds)")
 dev.off()
 
 print("DONE")

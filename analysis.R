@@ -1,14 +1,13 @@
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)!=2) {
-	stop("At least two arguments must be supplied (working directory and input file)", call.=FALSE)
+  stop("At least two arguments must be supplied (working directory and input file)", call.=FALSE)
 } else {
-	setwd(args[1])
-	data <- read.csv(args[2], header=TRUE, sep=',', colClasses= c("character","character","character","integer","character","numeric","numeric"),)
+  setwd(args[1])
+  data <- read.csv(args[2], header=TRUE, sep=',', colClasses= c("character","character","character","integer","character","numeric","numeric"),)
 }
 
 require("ggplot2")
-
 
 ##############################################################################
 
@@ -36,10 +35,10 @@ for (x in 1:n) {
 }
 
 time <- aggregate(data$request_sum, list(cut(data$request_time_mili, breaks=hours)), sum)
-#time$hours <- c(1:n)
+time$minute <- seq.int(nrow(time))
 
 png('load.png')
-ggplot(data=time, aes(x=Group.1, y=request_sum, group=1)) +
+ggplot(data=time, aes(x=minute, y=request_sum, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   xlab("Experiment Time (min)") + ylab("Perfomed Requests")
 dev.off()
@@ -56,10 +55,10 @@ for (x in 1:n) {
 }
 
 time <- aggregate(data$request_sum, list(cut(data$response_time_mili, breaks=hours)), sum)
-#time$hours <- c(1:n)
+time$minute <- seq.int(nrow(time))
 
 png('throughput.png')
-ggplot(data=time, aes(x=Group.1, y=request_sum, group=1)) +
+ggplot(data=time, aes(x=minute, y=request_sum, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   xlab("Hora do Dia") + ylab("Successful Responses")
 dev.off()
@@ -105,11 +104,42 @@ for (x in 1:n) {
   val <- val + 60000
 }
 time <- aggregate(success$response_time, list(cut(success$request_time_mili, breaks=hours)), mean)
+time$minute <- seq.int(nrow(time))
 
 png('response_time.png')
-ggplot(data=time, aes(x=Group.1, y=x, group=1)) +
+ggplot(data=time, aes(x=minute, y=x, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   xlab("Hora do Dia") + ylab("Response Time (miliseconds)")
+dev.off()
+
+
+
+
+################### COUNT ERRORS
+
+result <- data$result
+rate <- as.data.frame(table(result))
+
+Estado <- c("Erro", "Sucesso")
+theme_set(theme_gray(base_size = 18))
+png('rate.png')
+ggplot(rate, aes(result, Freq, fill=Estado)) + geom_bar(stat="identity", width=.6) +
+xlab("Estado da resposta da requisição") + ylab("Requisições") +
+theme(axis.text.x=element_blank(), axis.ticks.x=element_blank())
+dev.off()
+
+
+################### COUNT ERRORS BY MINUTE
+
+data_error <- data[data$result == 'error',]
+
+time <- aggregate(data_error$request_sum, list(cut(data_error$request_time_mili, breaks=hours)), sum)
+time$minute <- seq.int(nrow(time))
+
+png('error_minute.png')
+ggplot(data=time, aes(x=minute, y=request_sum, group=1)) +
+  geom_bar(stat="identity", fill="#56B4E9") +
+  xlab("Experiment Time (min)") + ylab("Error Count")
 dev.off()
 
 print("DONE")

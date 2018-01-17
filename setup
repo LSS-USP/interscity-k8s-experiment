@@ -353,6 +353,13 @@ fi
 
 if [ "$1" = "run" ]; then
   create_simulator
+  file=/tmp/containers.txt
+  echo "Monitoring the number of containers (output to $file). Press Ctrl+C to stop monitoring."
+  if [ -e $file ]
+  then
+    rm $file
+  fi
+  while true; do echo "====="; date +"%T"; kubectl get pods | grep Running; sleep 60; done > /tmp/containers.txt
 fi
 
 if [ "$1" = "stop" ]; then

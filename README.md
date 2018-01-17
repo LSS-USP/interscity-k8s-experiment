@@ -20,7 +20,7 @@ As long as we use GKE's elastic features, you will need to create a new project
 and [enable billing](https://support.google.com/cloud/answer/6293499?hl=pt-br#enable-billing)
 for it.
 
-The [](setup) script has some variables that define the machine types and the
+The [Setup](setup) script has some variables that define the machine types and the
 number of instances for each node pools we are creating. If you are going to
 create a cluster with 86 CPUs, you must increase your quotas on GCloud service
 (this action may require additional payments).
@@ -77,7 +77,7 @@ This will instantiate a unique pod of the InterSCSimulator in the simulator-pool
 which will, after a while, create the actors, setup, and run the simulation.
 I suggest you to follow the simulator's pod logs.
 
-The entire experiment should take about 2:30 hours. However, you can get
+The entire experiment should take about 3:00 hours. However, you can get
 partial results with the following command whenever you want:
 ```sh
 ./setup copy
@@ -85,7 +85,7 @@ partial results with the following command whenever you want:
 This command will copy two files from simulator's pod:
 * **/tmp/response_time.csv** -> contains the data related to the requests
 performed by the simulator to the InterSCity platform
-* **/tmp/events.xml** -> contains simulator-specific data related to events
+* **/tmp/events.csv** -> contains simulator-specific data related to events
 that happened during the simulation.
 
 Right now, we do not copy these files automatically at the end of the experiment.

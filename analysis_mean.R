@@ -68,7 +68,7 @@ png('load_mean.png')
 ggplot(data=final_load, aes(x=minute, y=mean_request_sum, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   geom_errorbar(width=.1, aes(ymin=mean_request_sum-sd_request_sum, ymax=mean_request_sum+sd_request_sum)) +
-  xlab("Hora do Dia") + ylab("Load")
+  xlab("Experiment Time (min)") + ylab("Perfomed Requests")
 dev.off()
 
 
@@ -86,5 +86,5 @@ png('response_mean.png')
 ggplot(data=final_response, aes(x=minute, y=mean_response_time, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   geom_errorbar(width=.1, aes(ymin=mean_response_time-sd_response_time, ymax=mean_response_time+sd_response_time)) +
-  xlab("Hora do Dia") + ylab("Response Time (miliseconds)")
+  xlab("Experiment Time (min)") + ylab("Response Time (miliseconds)")
 dev.off()

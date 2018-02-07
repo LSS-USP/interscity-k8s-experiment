@@ -6,9 +6,9 @@ require("matrixStats")
 ### Carrega cada um dos arquivos
 
 folder <- "/home/eduardo/Doutorado/experimentos/interscity-k8s-experiment/outputs/"
-number <- 3
+number <- 7
 
-for (numData in 12:14) {
+for (numData in 13:(13 + number)) {
   pathFinal <- paste(folder, numData, sep="")
   pathFinal <- paste(pathFinal, "/response_time.csv", sep="")
   data <- read.csv(pathFinal, header=TRUE, sep=',', colClasses= c("character","character","character","integer","character","numeric","numeric"),)
@@ -26,7 +26,7 @@ for (numData in 12:14) {
   
   time <- aggregate(data$request_sum, list(cut(data$request_time_mili, breaks=hours)), sum)
   time$minute <- seq.int(nrow(time))
-  time <- time[time$minute < 18, ]
+  time <- time[time$minute < 15, ]
   if (exists("final")) {
     columnName <- paste("request_sum_", numData, sep="")
     final[columnName] <- time$request_sum

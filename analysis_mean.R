@@ -6,11 +6,6 @@ require("matrixStats")
 ### Carrega cada um dos arquivos
 
 folder <- "/home/eduardo/Doutorado/experimentos/interscity-k8s-experiment/outputs/"
-<<<<<<< HEAD
-number <- 7
-
-=======
->>>>>>> 2c0a1c22df37d0263e17779a6aebd037047904cc
 for (numData in 11:21) {
   pathFinal <- paste(folder, numData, sep="")
   pathFinal <- paste(pathFinal, "/response_time.csv", sep="")
@@ -115,9 +110,6 @@ ggplot(data=final_response, aes(x=minute, y=mean_response_time, group=1)) +
   xlab("Experiment Time (min)") + ylab("Response Time (miliseconds)")
 dev.off()
 
-<<<<<<< HEAD
-=======
-
 ###### GENERATE RESPONSE TIME GRAPH ######
 
 x <- data.matrix(final_response[ , !(names(final_response) %in% drops)], rownames.force = NA)
@@ -137,7 +129,6 @@ ggplot(data=final_response, aes(x=minute, y=mean_response_time, group=1)) +
   xlab("Experiment Time (min)") + ylab("Response Time (miliseconds)")
 dev.off()
 
->>>>>>> 2c0a1c22df37d0263e17779a6aebd037047904cc
 ###### GENERATE THROUGHPUT GRAPH ####
 
 x <- data.matrix(final_throughput[ , !(names(final_throughput) %in% drops)], rownames.force = NA)
@@ -155,8 +146,4 @@ ggplot(data=final_throughput, aes(x=minute, y=mean_throughput, group=1)) +
   geom_bar(stat="identity", fill="#56B4E9") +
   geom_errorbar(width=.1, aes(ymin=mean_throughput-sd_throughput, ymax=mean_throughput+sd_throughput)) +
   xlab("Experiment Time (min)") + ylab("Successful Responses")
-<<<<<<< HEAD
 dev.off()
-=======
-dev.off()
->>>>>>> 2c0a1c22df37d0263e17779a6aebd037047904cc

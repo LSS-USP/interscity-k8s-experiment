@@ -8,10 +8,11 @@ if(length(args)!=2) {
 }
 
 data$minute <- seq.int(nrow(data))
+data <- data[data$minute < 170,]
 
 require("ggplot2")
 
-theme_set(theme_gray(base_size = 18))
+theme_set(theme_gray(base_size = 16))
 png('containers.png')
 ggplot(data=data, aes(x=minute)) +
   geom_line(aes(y = data.collector, colour = "Data Collector")) + 
@@ -21,6 +22,6 @@ ggplot(data=data, aes(x=minute)) +
   scale_colour_manual("", 
                       breaks = c("Data Collector", "Resource Catalog", "Resource Discovery", "Kong"),
                       values = c("red", "green", "blue", "black")) +
-  xlab("Experiment Time (m)") + ylab("Containers")
+  xlab("Experiment Time (m)") + ylab("Containers") + theme(legend.position="bottom")
 dev.off()
 

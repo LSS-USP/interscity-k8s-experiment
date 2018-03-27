@@ -6,12 +6,11 @@ this repository has the scripts to run the platform on [GKE](https://cloud.googl
 using [Kubernetes automating tool](https://kubernetes.io/). We also use
 the [InterSCSimulator](http://interscity.org/software/interscsimulator/) which
 integrates with InterSCity platform to generate the required workload for
-assessing the platform scalability. The experiment plan is described
-[here (portuguese only)]().
+assessing the platform scalability.
 
 # Setup
 
-You need gcloud and kubectl command-line tools installed and set upto run 
+You need gcloud and kubectl command-line tools installed and set up to run 
 deployment commands. Also make sure your Google Cloud account has
 STATIC\_ADDRESSES available for the external access of Kong services.
 [Follow the installation and login steps of Google Cloud SDK](https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu)

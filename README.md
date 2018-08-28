@@ -125,10 +125,10 @@ them with the following commands:
 
 ## Delete Everything - READ WITH ATTENTION
 
-I've create an option on **setup** script to remove all my resources
-from GCloud to prevent me from being charged for things I was not expecting.
+We created an option on the **setup** script to remove all user resources
+from GCloud to prevent the system from charging the user for things he/she was not expecting.
 So, if you have other resources in GCloud that have nothing to do with this
-experiment, do not run the remove-all command.
+experiment, do not run the remove-all command, otherwise these other resources will also be removed.
 
 Having said that, when you want to remove the cluster and other resources related to the
 experiment, run the following command:
